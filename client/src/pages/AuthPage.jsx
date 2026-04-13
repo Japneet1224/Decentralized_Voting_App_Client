@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'; 
+import API_URL from '../config'; // Added central API configuration
 
 export default function AuthPage({ setUser }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const [needsWallet, setNeedsWallet] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   
-  // Updated state to handle the new ID fields instead of the file
   const [formData, setFormData] = useState({ 
     name: '', 
     dateOfBirth: '', 
@@ -37,7 +37,8 @@ export default function AuthPage({ setUser }) {
   const handleLogin = async () => {
     if (!walletAddress) return setMessage("❌ Please connect your Secure Digital ID first.");
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      // FIX: Replaced localhost with API_URL template literal
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress })
@@ -60,13 +61,14 @@ export default function AuthPage({ setUser }) {
     e.preventDefault();
     if (!walletAddress) return setMessage("❌ Please connect your Secure Digital ID first.");
     
-    // Basic Aadhaar validation (ensuring it's roughly 12 digits)
+    // Basic Aadhaar validation
     if (formData.aadharNumber.length < 12) {
       return setMessage("❌ Please enter a valid 12-digit Aadhaar Number.");
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      // FIX: Replaced localhost with API_URL template literal
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ walletAddress, ...formData })
@@ -151,7 +153,6 @@ export default function AuthPage({ setUser }) {
                 </select>
               </div>
 
-              {/* --- NEW: AADHAAR AND VOTER ID FIELDS --- */}
               <div className="input-group">
                 <label className="input-label">Aadhaar Card Number <span style={{color: 'var(--danger-red)'}}>*</span></label>
                 <input 
@@ -160,7 +161,7 @@ export default function AuthPage({ setUser }) {
                   placeholder="12-digit Aadhaar Number" 
                   maxLength="12"
                   value={formData.aadharNumber} 
-                  onChange={(e) => setFormData({...formData, aadharNumber: e.target.value.replace(/\D/g, '')})} // Forces numbers only
+                  onChange={(e) => setFormData({...formData, aadharNumber: e.target.value.replace(/\D/g, '')})} 
                   required 
                 />
               </div>
