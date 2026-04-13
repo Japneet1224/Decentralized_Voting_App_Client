@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
+import API_URL from '../config'; // Added central API configuration
 
 export default function CitizenDashboard({ user }) {
   const [elections, setElections] = useState([]);
@@ -11,7 +12,8 @@ export default function CitizenDashboard({ user }) {
 
   const fetchElections = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/elections/${user.walletAddress}`);
+      // FIX: Replaced localhost with API_URL template literal
+      const response = await fetch(`${API_URL}/api/elections/${user.walletAddress}`);
       const data = await response.json();
       setElections(data);
     } catch (error) {
@@ -21,7 +23,8 @@ export default function CitizenDashboard({ user }) {
 
   const handleVote = async (electionId, candidateId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/elections/${electionId}/vote`, {
+      // FIX: Replaced localhost with API_URL template literal
+      const response = await fetch(`${API_URL}/api/elections/${electionId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ candidateId, walletAddress: user.walletAddress })
@@ -29,7 +32,7 @@ export default function CitizenDashboard({ user }) {
 
       if (response.ok) {
         setMessage("✅ Your secure, anonymous vote has been recorded successfully.");
-        // Instant disappearance
+        // Instant disappearance from the UI after voting
         setElections(currentElections => currentElections.filter(e => e._id !== electionId));
       } else {
         const data = await response.json();
