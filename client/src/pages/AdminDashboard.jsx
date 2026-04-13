@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
+import API_URL from '../config';
 
 export default function AdminDashboard({ user }) {
   const [pendingCitizens, setPendingCitizens] = useState([]);
@@ -16,7 +17,8 @@ export default function AdminDashboard({ user }) {
 
   const fetchPendingCitizens = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/pending');
+      // FIX: Added backticks for template literal
+      const response = await fetch(`${API_URL}/api/admin/pending`);
       const data = await response.json();
       setPendingCitizens(data);
     } catch (error) {
@@ -26,7 +28,8 @@ export default function AdminDashboard({ user }) {
 
   const fetchAllElections = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/elections');
+      // FIX: Replaced localhost with API_URL
+      const response = await fetch(`${API_URL}/api/elections`);
       const data = await response.json();
       setAllElections(data);
     } catch (error) {
@@ -36,7 +39,8 @@ export default function AdminDashboard({ user }) {
 
   const approveCitizen = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/approve/${userId}`, { method: 'PUT' });
+      // FIX: Replaced localhost with API_URL
+      const response = await fetch(`${API_URL}/api/admin/approve/${userId}`, { method: 'PUT' });
       if (response.ok) {
         setMessage("✅ Citizen KYC approved successfully.");
         fetchPendingCitizens(); 
@@ -51,7 +55,8 @@ export default function AdminDashboard({ user }) {
     const candidatesArray = candidates.split(',').map(c => c.trim());
 
     try {
-      const response = await fetch('http://localhost:5000/api/elections', {
+      // FIX: Replaced localhost with API_URL
+      const response = await fetch(`${API_URL}/api/elections`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newElection, targetState, candidates: candidatesArray })
@@ -80,7 +85,7 @@ export default function AdminDashboard({ user }) {
         </div>
       )}
 
-      {/* --- KYC APPROVAL CARD (NOW WITH AADHAAR VISIBILITY) --- */}
+      {/* --- KYC APPROVAL CARD --- */}
       <div className="card">
         <h3 className="card-header" style={{ textAlign: 'left', fontSize: '1.25rem' }}>Pending Voter Registrations</h3>
         {pendingCitizens.length === 0 ? <p className="help-text" style={{ textAlign: 'left' }}>No pending applications at this time.</p> : null}
